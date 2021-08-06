@@ -1,0 +1,30 @@
+version: "3"
+services:
+  db:
+    image: postgres:10.7-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ebanx_user
+      POSTGRES_PASSWORD: ebanx_pw
+      PG_USER: ebanx_user
+      PG_PASSWORD: ebanx_pw
+    volumes:
+      - postgres107:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d/init.sql:/docker-entrypoint-initdb.d/init.sql
+  api:
+    stdin_open: true
+    # tty: true
+    restart: always
+    working_dir: /app
+    build: .
+    command: bundle exec rackup -d -p 9292 -o 0.0.0.0
+    volumes:
+      - .:/app
+      - ~/.bash_history:/root/.bash_history
+    ports:
+      - 9292:9292
+    depends_on:
+      - db
+volumes:
+  postgres107:
