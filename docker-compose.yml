@@ -5,6 +5,7 @@ services:
     ports:
       - 5432:5432
     environment:
+      POSTGRES_DB: wallet_manager_db
       POSTGRES_USER: ebanx_user
       POSTGRES_PASSWORD: ebanx_pw
       PG_USER: ebanx_user
@@ -26,5 +27,7 @@ services:
       - 9292:9292
     depends_on:
       - db
+    environment:
+      DATABASE_URL: 'postgres://ebanx_user:ebanx_pw@db:5432/wallet_manager_db'
 volumes:
   postgres107:
