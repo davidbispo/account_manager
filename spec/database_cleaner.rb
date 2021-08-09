@@ -1,17 +1,10 @@
-# require_relative '../app/elastic_client'
-
-# ES_HOST = 'http://elasticsearch'
-
-# class DatabaseCleaner
-#   class << self
-#     def start
-#       url =  "#{ES_HOST}/_all"
-#       @client = ElasticClient.new(
-#         url,
-#         Net::HTTP::Delete,
-#         {}
-#       )
-#       @client.perform
-#     end
-#   end
-# end
+class DatabaseCleaner
+  class << self
+    def start(db_instance)
+      accounts = db_instance.from(:accounts)
+      accounts_dataset = accounts.all
+      accounts_dataset.delete
+      return true
+    end
+  end
+end

@@ -1,6 +1,10 @@
 require 'sinatra/base'
 require 'sequel'
-require_relative './services/create_account_service'
+require_relative './services/create_and_deposit_to_account_service'
+require_relative './services/get_balance_service'
+require_relative './services/reset_state_service'
+require_relative './services/transfer_between_accounts_service'
+require_relative './services/withdraw_from_account_service'
 
 module WalletManager
   class API < Sinatra::Base
@@ -31,60 +35,52 @@ module WalletManager
     end
 
     post '/reset' do
-      halt 200
+      begin
+        result =  Services::ResetStateService.new.perform(DB)
+        halt 200 if result == true
+      rescue => e
+        return e.message.to_json
+      end
     end
 
     get '/balance/:id' do
-      if params["id"] != "100"
-        halt 404
-        return 0
+      result =  Services::GetBalanceService.new.perform(DB, params["id"])
+      if result != 'not found'
+        status 200
+        return result.to_json
       end
-      status 200
-      return "20"
+        halt 404
+        return "0"
     end
 
     post '/events' do
       event = @request_payload
       if event["type"] == 'deposit'
-        Services::CreateAccountService(
+        return Services::CreateAndDepositToAccountService.new.perform(
+          DB,
           event["destination"],
-          event["amount"],
+          event["amount"]
         ).to_json
       end
     end
-    # post '/events' do
-    #   if @request_payload == {"type"=>"potato", "color"=>"yellow", "size"=>10}
-    #     halt 422
-    #   end
 
-    #   if @request_payload == {"type": "withdraw", "origin"=>"200", "amount":10 } ||
-    #     @request_payload == {"type": "transfer", "origin"=>"200", "amount":15, "destination"=>"300"} ||
-    #     @request_payload == {"type": "transfer", "origin"=>"200", "amount":15, "destination"=>"300"} ||
-    #     @request_payload == {"type"=>"withdraw", "origin"=>"103", "amount"=>5} ||
-    #     @request_payload == {"type"=>"transfer", "origin"=>"100", "amount"=>15, "destination"=>"303"}
-    #     status 404
-    #     return "0"
-    #   end
+    if event["type"] == 'transfer'
+      return Services::TransferBetweenAccountsService.new.perform(
+        DB,
+        event["origin"],
+        event["destination"],
+        event["amount"]
+      ).to_json
+    end
 
-    #   if @request_payload == {"type"=>"deposit", "destination"=>"100", "amount"=>10}
-    #     status 201
-    #     return {"destination": {"id"=>"100", "balance":20}}.to_json
-    #   end
+    if event["type"] == 'withdraw'
+      return Services::WithdrawFromAccountService.new.perform(
+        DB,
+        event["id"],
+        event["amount"]
+      ).to_json
+    end
 
-    #   if @request_payload == {"type"=>"deposit", "destination"=>"101", "amount"=>10}
-    #     status 201
-    #     return {"destination": {"id"=>"101", "balance":10}}.to_json
-    #   end
-
-    #   if @request_payload == {"type"=>"withdraw", "origin"=>"100", "amount"=>5}
-    #     status 201
-    #     return {"origin": {"id"=>"100", "balance":15}}.to_json
-    #   end
-
-    #   if @request_payload == {"type"=>"transfer", "origin"=>"100", "amount"=>15, "destination"=>"300"}
-    #     status 201
-    #     {"origin"=>{"id"=>"100", "balance"=>0}, "destination"=>{"id"=>"300", "balance"=>15}}.to_json
-    #   end
-    # end
+    halt 422
   end
 end
