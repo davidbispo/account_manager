@@ -1,5 +1,6 @@
-
+require 'sequel'
 require_relative '../../../app/api'
+DB = Sequel.connect(ENV['DATABASE_URL'])
 
 RSpec.describe 'GET /balance?account_id=account_id' do
 
@@ -8,10 +9,9 @@ RSpec.describe 'GET /balance?account_id=account_id' do
   end
 
   context "account exists" do
-    let(:existing_account_id) { 100 }
-
     before do
-      get("/balance/#{existing_account_id}")
+      @existing_account = DB.from(:accounts).insert(balance:20)
+      get("/balance?account_id=#{@existing_account}")
     end
 
     it "expects a confirmation from the API" do
@@ -26,10 +26,11 @@ RSpec.describe 'GET /balance?account_id=account_id' do
   end
 
   context "account does not exist" do
-    let (:non_existing_account_id) { 103 }
+    let (:non_existing_account_id) { 99999 }
     it "expects a 404 from the API" do
-      get("/balance/#{non_existing_account_id}")
+      get("/balance?account_id=#{non_existing_account_id}")
       expect(last_response.status).to eq(404)
+      expect(last_response.body).to eq("0")
     end
   end
 end

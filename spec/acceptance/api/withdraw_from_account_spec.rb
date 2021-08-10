@@ -6,12 +6,12 @@ RSpec.describe 'POST /event: withdraw' do
   end
 
   before do
-    post("/event", payload.to_json, { 'CONTENT_TYPE' => 'application/json' })
+    @existing_account_id = DB.from(:accounts).insert(balance:20)
+    @payload = {"type"=>"withdraw", "origin"=>@existing_account_id, "amount":5}
+    post("/event", @payload.to_json, { 'CONTENT_TYPE' => 'application/json' })
   end
 
   context "and account exists" do
-    let (:payload) { {"type"=>"withdraw", "origin"=>"100", "amount":5} }
-
     it "expects a correct response from the API" do
       expect(last_response.status).to eq(201)
     end
@@ -23,11 +23,15 @@ RSpec.describe 'POST /event: withdraw' do
   end
 
   context "and account does not exist" do
-    let (:payload) { {"type"=>"withdraw", "origin"=>"103", "amount":5} }
+    let (:payload) { {"type"=>"withdraw", "origin"=>"9999", "amount":5} }
+    before do
+      post("/event", payload.to_json, { 'CONTENT_TYPE' => 'application/json' })
+    end
     it { expect(last_response.status).to eq(404) }
+    it { expect(last_response.body).to eq("0") }
   end
 
   def response_template
-    {"origin"=>{"id"=>"100", "balance"=>15}}
+    {"origin"=>{"id"=>@existing_account_id.to_s, "balance"=>15}}
   end
 end

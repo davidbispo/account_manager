@@ -5,12 +5,14 @@ RSpec.describe 'POST /event: transfer from account' do
     WalletManager::API
   end
 
-  before do
-    post("/event", payload.to_json, { 'CONTENT_TYPE' => 'application/json' })
-  end
-
   context "and account exists" do
-    let (:payload) { {"type"=>"transfer", "origin"=>"100", "amount":15, "destination"=>"300"} }
+    before do
+      @existing_origin_account_id = DB.from(:accounts).insert(balance:15)
+      @existing_destination_account_id = DB.from(:accounts).insert(balance:0)
+      @payload = {"type"=>"transfer", "origin"=> @existing_origin_account_id.to_s, "amount":15, "destination"=>@existing_destination_account_id.to_s}
+      post("/event", @payload.to_json, { 'CONTENT_TYPE' => 'application/json' })
+    end
+
 
     it "expects a correct response from the API" do
       expect(last_response.status).to eq(201)
@@ -22,18 +24,20 @@ RSpec.describe 'POST /event: transfer from account' do
     end
   end
 
-  context "and account does not exist" do
-    let (:payload) { {"type"=>"transfer", "origin"=>"100", "amount":15, "destination"=>"303"} }
+  context "and origin account does not exist" do
+    let (:payload) { {"type"=>"transfer", "origin"=>"9999", "amount":15, "destination"=>"303"} }
+    before do
+      post("/event", payload.to_json, { 'CONTENT_TYPE' => 'application/json' })
+    end
 
     it "expects body to match template" do
-      parsed = JSON.parse(last_response.body)
-      expect(parsed).to eq(0)
+      expect(last_response.body).to eq("0")
     end
 
     it { expect(last_response.status).to eq(404) }
   end
 
   def response_template
-    {"origin"=>{"id"=>"100", "balance"=>0}, "destination"=>{"id"=>"300", "balance"=>15}}
+    {"origin"=>{"id"=>@existing_origin_account_id.to_s, "balance"=>0}, "destination"=>{"id"=>@existing_destination_account_id.to_s, "balance"=>15}}
   end
 end

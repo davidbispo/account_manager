@@ -17,7 +17,6 @@ module WalletManager
     DB = Sequel.connect(ENV['DATABASE_URL'])
 
     configure :development, :test do
-      require 'byebug'
       require "sinatra/reloader"
 
       register Sinatra::Reloader
@@ -63,7 +62,7 @@ module WalletManager
           event["amount"]
         )
         status 201
-        return result.to_json#.sub!(":{"," : {")
+        return result.to_json
       end
 
     if event["type"] == 'transfer'
@@ -78,7 +77,7 @@ module WalletManager
         return "0"
       end
       status 201
-      return result.to_json#.sub!(":{"," : {")
+      return result.to_json
     end
 
     if event["type"] == 'withdraw'
@@ -92,7 +91,7 @@ module WalletManager
         return "0"
       end
       status 201
-      return result.to_json#.sub!(":{"," : {")
+      return result.to_json
     end
 
     halt 422
