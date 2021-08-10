@@ -1,7 +1,11 @@
 require 'rack/test'
 require 'byebug'
+require 'sequel'
+
+DB = Sequel.connect(ENV['DATABASE_URL'])
+
 ENV['RACK_ENV'] = 'test'
-# require_relative './database_cleaner'
+require_relative './database_cleaner'
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
@@ -20,6 +24,6 @@ RSpec.configure do |config|
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
   config.before(:all) do
-    DatabaseCleaner::start
+    DatabaseCleaner::start(DB)
   end
 end
