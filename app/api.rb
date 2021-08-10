@@ -75,7 +75,7 @@ module WalletManager
       )
       halt 400 if result == false
       status 201
-      return result.sub!(":{"," : {")
+      return result.to_json#.sub!(":{"," : {")
     end
 
     if event["type"] == 'withdraw'
@@ -85,7 +85,7 @@ module WalletManager
         event["amount"]
       )
       status 201
-      return result.to_json.sub!(":{"," : {")
+      return result.to_json#.sub!(":{"," : {")
     end
 
     halt 422

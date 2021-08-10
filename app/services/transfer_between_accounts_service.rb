@@ -19,12 +19,12 @@ module Services
       return {
         origin:
           {
-            id: origin_dataset.first[:id],
+            id: origin_dataset.first[:id].to_s,
             balance: origin_dataset.first[:balance]
           },
         destination:
         {
-          id: dest_dataset.first[:id],
+          id: dest_dataset.first[:id].to_s,
           balance: dest_dataset.first[:balance]
         }
       }

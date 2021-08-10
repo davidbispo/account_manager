@@ -13,7 +13,7 @@ module Services
       return {
         origin:
           {
-            id: account_dataset.first[:id],
+            id: account_dataset.first[:id].to_s,
             balance: account_dataset.first[:balance]
           }
         }
