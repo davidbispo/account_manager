@@ -63,7 +63,8 @@ module WalletManager
           event["amount"]
         )
         status 201
-        return result.to_json
+        byebug
+        return result.to_json.sub!(":"," : ")
       end
 
     if event["type"] == 'transfer'
@@ -75,7 +76,7 @@ module WalletManager
       )
       halt 400 if result == false
       status 201
-      return result.to_json
+      return result.sub!(":"," : ")
     end
 
     if event["type"] == 'withdraw'
@@ -85,7 +86,7 @@ module WalletManager
         event["amount"]
       )
       status 201
-      return result.to_json
+      return result.to_json.sub!(":"," : ")
     end
 
     halt 422
