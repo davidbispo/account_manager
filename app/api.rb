@@ -37,7 +37,8 @@ module WalletManager
     post '/reset' do
       begin
         result =  Services::ResetStateService.new.perform(DB)
-        halt 200 if result == true
+        status 200 if result == true
+        return "OK"
       rescue => e
         return e.message.to_json
       end
@@ -53,7 +54,7 @@ module WalletManager
         return "0"
     end
 
-    post '/events' do
+    post '/event' do
       event = @request_payload
       if event["type"] == 'deposit'
         result = Services::CreateAndDepositToAccountService.new.perform(

@@ -1,12 +1,12 @@
 require_relative '../../../app/api'
 
-RSpec.describe 'POST /events: create and deposit' do
+RSpec.describe 'POST /event: create and deposit' do
   def app
     WalletManager::API
   end
 
   before do
-    post('/events', body.to_json, { 'CONTENT_TYPE' => 'application/json' })
+    post('/event', body.to_json, { 'CONTENT_TYPE' => 'application/json' })
   end
 
   context "information is correct" do

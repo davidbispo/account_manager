@@ -6,7 +6,7 @@ RSpec.describe 'POST /event: withdraw' do
   end
 
   before do
-    post("/events", payload.to_json, { 'CONTENT_TYPE' => 'application/json' })
+    post("/event", payload.to_json, { 'CONTENT_TYPE' => 'application/json' })
   end
 
   context "and account exists" do
