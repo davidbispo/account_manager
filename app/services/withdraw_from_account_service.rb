@@ -2,17 +2,19 @@ module Services
   class WithdrawFromAccountService
     def perform(db_instance, account_id, amount)
       accounts = db_instance.from(:accounts)
-      account_dataset = accounts.where(:id => destination_account_id)
-      account = origin_dataset.first
+      account_dataset = accounts.where(:id => account_id)
+      account = account_dataset.first
+
+      return false unless account
 
       new_balance = account[:balance] - amount
-      account_dataset.update(balance: amount)
+      account_dataset.update(balance: new_balance)
 
       return {
         origin:
           {
-            id: account[:id],
-            balance: account[:balance]
+            id: account_dataset.first[:id],
+            balance: account_dataset.first[:balance]
           }
         }
     end

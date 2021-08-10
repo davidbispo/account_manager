@@ -9,7 +9,6 @@ module Services
         current_dataset.update(balance: new_balance)
         result = current_dataset.first
       else
-        byebug
         created_id = accounts.insert(id: destination_account_id, balance: deposit)
         result = accounts.where(:id => created_id).first
       end

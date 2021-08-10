@@ -56,31 +56,35 @@ module WalletManager
     post '/events' do
       event = @request_payload
       if event["type"] == 'deposit'
-        return Services::CreateAndDepositToAccountService.new.perform(
+        result = Services::CreateAndDepositToAccountService.new.perform(
           DB,
           event["destination"],
           event["amount"]
-        ).to_json
+        )
+        return result.to_json
       end
-    end
 
     if event["type"] == 'transfer'
-      return Services::TransferBetweenAccountsService.new.perform(
+      result = Services::TransferBetweenAccountsService.new.perform(
         DB,
         event["origin"],
         event["destination"],
         event["amount"]
-      ).to_json
+      )
+      halt 400 if result == false
+      return result.to_json
     end
 
     if event["type"] == 'withdraw'
-      return Services::WithdrawFromAccountService.new.perform(
+      result = Services::WithdrawFromAccountService.new.perform(
         DB,
-        event["id"],
+        event["origin"],
         event["amount"]
-      ).to_json
+      )
+      return result.to_json
     end
 
     halt 422
+    end
   end
 end

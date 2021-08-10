@@ -2,8 +2,7 @@ module Services
   class ResetStateService
     def perform(db_instance)
       accounts = db_instance.from(:accounts)
-      dataset = accounts.all
-      account = dataset.delete
+      accounts.delete
       return true
     end
   end
