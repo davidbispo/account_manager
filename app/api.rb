@@ -73,7 +73,10 @@ module WalletManager
         event["destination"],
         event["amount"]
       )
-      halt 400 if result == false
+      if result == false
+        status 404
+        return "0"
+      end
       status 201
       return result.to_json#.sub!(":{"," : {")
     end
