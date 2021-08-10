@@ -44,8 +44,8 @@ module WalletManager
       end
     end
 
-    get '/balance/:id' do
-      result =  Services::GetBalanceService.new.perform(DB, params["id"])
+    get '/balance' do
+      result =  Services::GetBalanceService.new.perform(DB, params["account_id"])
       if result != 'not found'
         status 200
         return result.to_json
@@ -84,6 +84,10 @@ module WalletManager
         event["origin"],
         event["amount"]
       )
+      if result == false
+        status 404
+        return "0"
+      end
       status 201
       return result.to_json#.sub!(":{"," : {")
     end
