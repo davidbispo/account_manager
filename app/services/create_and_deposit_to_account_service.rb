@@ -16,7 +16,7 @@ module Services
       return {
         "destination" =>
           {
-            "id"=>result[:id],
+            "id"=>result[:id].to_s,
             "balance"=>result[:balance]
           }
       }

@@ -63,7 +63,7 @@ module WalletManager
           event["amount"]
         )
         status 201
-        return result.to_json.sub!(":{"," : {")
+        return result.to_json#.sub!(":{"," : {")
       end
 
     if event["type"] == 'transfer'
