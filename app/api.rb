@@ -63,7 +63,6 @@ module WalletManager
           event["amount"]
         )
         status 201
-        byebug
         return result.to_json.sub!(":"," : ")
       end
 
