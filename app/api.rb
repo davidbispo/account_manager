@@ -50,7 +50,7 @@ module WalletManager
         status 200
         return result.to_json
       end
-        halt 404
+        status 404
         return "0"
     end
 
@@ -62,6 +62,7 @@ module WalletManager
           event["destination"],
           event["amount"]
         )
+        status 201
         return result.to_json
       end
 
@@ -73,6 +74,7 @@ module WalletManager
         event["amount"]
       )
       halt 400 if result == false
+      status 201
       return result.to_json
     end
 
@@ -82,6 +84,7 @@ module WalletManager
         event["origin"],
         event["amount"]
       )
+      status 201
       return result.to_json
     end
 
