@@ -5,7 +5,7 @@ DB = Sequel.connect(ENV['DATABASE_URL'])
 RSpec.describe 'GET /balance?account_id=account_id' do
 
   def app
-    WalletManager::API
+    AccountManager::API
   end
 
   context "account exists" do

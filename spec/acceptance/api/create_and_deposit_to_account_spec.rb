@@ -5,12 +5,12 @@ DB = Sequel.connect(ENV['DATABASE_URL'])
 
 RSpec.describe 'POST /event: create and deposit' do
   def app
-    WalletManager::API
+    AccountManager::API
   end
 
   context "information is correct" do
     context "and account does not exist" do
-      let(:body) { {"type"=>"deposit", "destination"=>"100", "amount":10} }
+      let(:body) { { type:"deposit", destination: 100, amount:10} }
       before do
         post('/event', body.to_json, { 'CONTENT_TYPE' => 'application/json' })
       end
@@ -28,7 +28,7 @@ RSpec.describe 'POST /event: create and deposit' do
         post('/event', body.to_json, { 'CONTENT_TYPE' => 'application/json' })
       end
 
-      let(:body) { {"type"=>"deposit", "destination"=>"101", "amount":10} }
+      let(:body) { {type: "deposit", destination: 101, amount:10} }
 
       it "expects 201" do
         expect(last_response.status).to eq(201)
@@ -42,7 +42,7 @@ RSpec.describe 'POST /event: create and deposit' do
   end
 
   context "information is incorrect" do
-    let (:body) { {"type"=>"potato", "color"=>"yellow", "size":10} }
+    let (:body) { { type: "potato", color: "yellow", size: 10} }
 
     before do
       post('/event', body.to_json, { 'CONTENT_TYPE' => 'application/json' })
@@ -54,9 +54,17 @@ RSpec.describe 'POST /event: create and deposit' do
   end
 
   def expected_echo_create
-    {"destination"=>{"id"=>"100", "balance"=>10}}
+    { "destination"=>
+      { "id"=> "100",
+      "balance"=> 10}
+    }
   end
   def expected_echo_deposit
-    {"destination"=>{"id"=>"101", "balance"=>20}}
+    {
+      "destination"=>
+      { "id"=> "101",
+        "balance"=> 20
+      }
+    }
   end
 end

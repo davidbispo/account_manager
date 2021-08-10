@@ -1,2 +1,2 @@
 require_relative 'app/api'
-run WalletManager::API.new
+run AccountManager::API.new

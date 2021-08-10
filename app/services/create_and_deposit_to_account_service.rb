@@ -14,10 +14,10 @@ module Services
       end
 
       return {
-        "destination" =>
+        destination:
           {
-            "id"=>result[:id].to_s,
-            "balance"=>result[:balance]
+            id:result[:id].to_s,
+            balance:result[:balance]
           }
       }
     end

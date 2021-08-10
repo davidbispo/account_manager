@@ -2,14 +2,20 @@ require_relative '../../../app/api'
 
 RSpec.describe 'POST /event: transfer from account' do
   def app
-    WalletManager::API
+    AccountManager::API
   end
 
   context "and account exists" do
     before do
       @existing_origin_account_id = DB.from(:accounts).insert(balance:15)
       @existing_destination_account_id = DB.from(:accounts).insert(balance:0)
-      @payload = {"type"=>"transfer", "origin"=> @existing_origin_account_id.to_s, "amount":15, "destination"=>@existing_destination_account_id.to_s}
+
+      @payload = {
+        "type"=>"transfer",
+        "origin"=> @existing_origin_account_id.to_s,
+        "amount":15,
+        "destination"=>@existing_destination_account_id.to_s
+      }
       post("/event", @payload.to_json, { 'CONTENT_TYPE' => 'application/json' })
     end
 
@@ -38,6 +44,15 @@ RSpec.describe 'POST /event: transfer from account' do
   end
 
   def response_template
-    {"origin"=>{"id"=>@existing_origin_account_id.to_s, "balance"=>0}, "destination"=>{"id"=>@existing_destination_account_id.to_s, "balance"=>15}}
+    {
+      "origin"=> {
+        "id"=> @existing_origin_account_id.to_s,
+        "balance"=> 0
+      },
+      "destination" =>
+      {"id" => @existing_destination_account_id.to_s,
+        "balance" => 15
+      }
+    }
   end
 end

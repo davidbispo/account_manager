@@ -6,7 +6,7 @@ require_relative './services/reset_state_service'
 require_relative './services/transfer_between_accounts_service'
 require_relative './services/withdraw_from_account_service'
 
-module WalletManager
+module AccountManager
   class API < Sinatra::Base
     set :server, 'puma'
     require 'json'
@@ -95,6 +95,13 @@ module WalletManager
     end
 
     halt 422
+    end
+
+    private
+
+    def render_not_found
+      status 404
+      return "0"
     end
   end
 end

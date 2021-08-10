@@ -2,7 +2,7 @@ require_relative '../../../app/api'
 
 RSpec.describe 'POST /event: withdraw' do
   def app
-    WalletManager::API
+    AccountManager::API
   end
 
   before do
@@ -32,6 +32,12 @@ RSpec.describe 'POST /event: withdraw' do
   end
 
   def response_template
-    {"origin"=>{"id"=>@existing_account_id.to_s, "balance"=>15}}
+    {
+      "origin"=>
+      {
+        "id"=>@existing_account_id.to_s,
+        "balance"=>15
+        }
+      }
   end
 end

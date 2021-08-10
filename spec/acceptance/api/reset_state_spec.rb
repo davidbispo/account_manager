@@ -5,7 +5,7 @@ DB = Sequel.connect(ENV['DATABASE_URL'])
 
 RSpec.describe 'POST /reset' do
   def app
-    WalletManager::API
+    AccountManager::API
   end
 
   context "and request is valid" do
