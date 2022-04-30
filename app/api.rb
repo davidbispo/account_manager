@@ -1,10 +1,5 @@
 require 'sinatra/base'
 require 'sequel'
-require_relative './services/create_and_deposit_to_account_service'
-require_relative './services/get_balance_service'
-require_relative './services/reset_state_service'
-require_relative './services/transfer_between_accounts_service'
-require_relative './services/withdraw_from_account_service'
 
 module AccountManager
   class API < Sinatra::Base
@@ -14,11 +9,9 @@ module AccountManager
 
     register Sinatra::ConfigFile
 
-    DB = Sequel.connect(ENV['DATABASE_URL'])
-
     configure :development, :test do
       require "sinatra/reloader"
-
+      require 'byebug'
       register Sinatra::Reloader
     end
 
@@ -35,7 +28,7 @@ module AccountManager
 
     post '/reset' do
       begin
-        result =  Services::ResetStateService.new.perform(DB)
+        result =  Services::Domain::ResetStateService.new.perform
         status 200 if result == true
         return "OK"
       rescue => e
@@ -43,58 +36,14 @@ module AccountManager
       end
     end
 
-    get '/balance' do
-      result =  Services::GetBalanceService.new.perform(DB, params["account_id"])
-      if result != 'not found'
-        status 200
-        return result.to_json
-      end
-        status 404
-        return "0"
+    get '/accounts/:id/balance' do
+      result = Services::Account::GetBalanceForAccountService.new(params[:id]).perform.response
+      render_json(result.status, result.result)
     end
 
     post '/event' do
-      event = @request_payload
-      if event["type"] == 'deposit'
-        result = Services::CreateAndDepositToAccountService.new.perform(
-          DB,
-          event["destination"],
-          event["amount"]
-        )
-        status 201
-        return result.to_json
-      end
-
-    if event["type"] == 'transfer'
-      result = Services::TransferBetweenAccountsService.new.perform(
-        DB,
-        event["origin"],
-        event["destination"],
-        event["amount"]
-      )
-      if result == false
-        status 404
-        return "0"
-      end
-      status 201
-      return result.to_json
-    end
-
-    if event["type"] == 'withdraw'
-      result = Services::WithdrawFromAccountService.new.perform(
-        DB,
-        event["origin"],
-        event["amount"]
-      )
-      if result == false
-        status 404
-        return "0"
-      end
-      status 201
-      return result.to_json
-    end
-
-    halt 422
+      res = Services::Domain::ResolveEventService.new(@request_payload).resolve
+      render_json(res.status, res.result)
     end
 
     private
@@ -102,6 +51,11 @@ module AccountManager
     def render_not_found
       status 404
       return "0"
+    end
+
+    def render_json(status, json)
+      status(status)
+      return json
     end
   end
 end

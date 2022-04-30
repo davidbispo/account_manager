@@ -23,3 +23,5 @@ rspec spec # to run all tests
 rspec <relative_path_to_file> # to run a specific test
 ```
 Should return confirmation of the server working
+
+sequel -m db/migrations postgres://ebanx_user:ebanx_pw@db:5432/wallet_manager_db
