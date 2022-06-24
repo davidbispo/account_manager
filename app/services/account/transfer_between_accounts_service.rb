@@ -19,15 +19,16 @@ module Services
         dest_account = ::Account.find(destination_account_id)
         
         return false unless origin_account && dest_account
-        
         new_balances = new_balances_after_deposit(origin_account, dest_account, amount)
 
         sequel_connection.transaction do
-          @updated_origin_dataset = origin_account.update(balance: new_balances.origin)
-          @updated_destination_dataset = dest_account.update(balance: new_balances.destination)
+          @updated_origin_dataset = ::Account.update(origin_account_id, balance: new_balances.origin)
+          @updated_destination_dataset = ::Account.update(destination_account_id, balance: new_balances.destination)
         end
         true
       end
+
+      private
   
       def sequel_connection
         Connections::AccountManager.connection

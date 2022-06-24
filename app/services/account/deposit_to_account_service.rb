@@ -3,8 +3,8 @@ module Services
     class DepositToAccountService
       def perform(account_id:, amount:)
         current_account = ::Account.find(account_id)
-        new_amount = current_account.balance + amount
-        current_account.update(amount: new_amount)
+        new_balance = current_account.balance + amount
+        ::Account.update(account_id, balance: new_balance)
         true
       end
     end
